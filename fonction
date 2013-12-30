@@ -1,0 +1,502 @@
+<?php
+/* © www.zabeille.org 2013 
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Calcul une grille vide en fonction de la constante 
+ * NB_CASE definie en début du script
+ * @param int CONST $nbCase
+ * @return array $plateau 
+ */
+function grillage($nbCase) {
+  for ($i = 1; $i <= NB_CASE; $i++) {
+    $grille[$i] = $i;
+  }
+  return $grille;
+}
+/**
+ * Calcul un tableau contenant les case du haut de la grille
+ * @param int CONST $nbCase
+ * @param int CONST $nbCol
+ * @param array $grille
+ * @return array $bordHaut
+ */
+function bordHaut($nbCol, $grille) {
+  $bordHaut = array();
+  foreach ($grille as $key => $elem) {
+    if ($elem <= NB_COL) {
+      $bordHaut[$key] = $elem;
+    }
+  }
+  return $bordHaut;
+}
+/**
+ * Calcul un tableau contenant les case du bas de la grille
+ * @param int CONST $nbCase
+ * @param int CONST $nbCol
+ * @param array $grille
+ * @return array $bordBas
+ */
+function bordBas($nbCase, $grille) {
+  $bordBas = array();
+  foreach ($grille as $key => $elem) {
+    if ($elem >= NB_CASE - 11) {
+      $bordBas[$key] = $elem;
+    }
+  }
+  return $bordBas;
+}
+/**
+ * Calcul un tableau contenant les case de gauche de la grille(première colonne)
+ * @param int CONST $nbCase
+ * @param int CONST $nbCol
+ * @param array $grille
+ * @return array $bordGauche
+ */
+function bordGauche($nbCol, $grille) {
+  $bordGauche = array();
+  foreach ($grille as $key => $elem) {
+    if ($elem % NB_COL == 1) {
+      $bordGauche[$key] = $elem;
+    }
+  }
+  return $bordGauche;
+}
+/**
+ * Calcul un tableau contenant les case de droite de la grille(dernière colonne)
+ * @param int CONST $nbCase
+ * @param int CONST $nbCol
+ * @param array $grille
+ * @return array $bordDroite
+ */
+function bordDroite($nbCol, $grille) {
+  $bordDroite = array();
+  foreach ($grille as $key => $elem) {
+    if ($elem % NB_COL == 0) {
+      $bordDroite[$key] = $elem;
+    }
+  }
+  return $bordDroite;
+}
+/**
+ *  Cree le nom des bateaux !!$key corespond à la clé dans foreach qui traite chaque $victime
+ * @param int $longVictime
+ * @param int $key
+ * @return string $nomVictime
+ */
+function nomVictime($longVictime,$key){
+//  $carteBateau=array();
+  
+switch($longVictime){
+    case 2:
+      $nomVictime='sous-marin_'.$key;
+      break;
+    case 3:
+      $nomVictime='destoyer_'.$key;
+      break;
+    case 4:
+      $nomVictime='coiseur_'.$key;
+      break;
+    default :
+      $nomVictime='porte-avion_'.$key;
+      break;      
+  }
+  return $nomVictime;
+}
+/**
+ * fonction qui recoit le nom du bateau et la case choisie
+ * Dans la $_SESSION['carteBateau'] 
+ * elle transforme la valeur equivalante à  la case choisie en 'T'
+ * puis vérifie si toute les valeurs du nom du bateau sont == 'T'
+ * si oui retourne $message= vous avez coulé un $nomBateau
+ * si non retourne $message= vous avez touche un $nomBateau  
+ * @param int $caseChoisieJoueur
+ * @param string $nomBateau
+ * @param int $cleTouchee
+ * @return string $message
+ */
+function verifDegat($caseChoisieJoueur, $nomBateau, $cleTouchee) {
+  $_SESSION['carteBateau'][$nomBateau][$cleTouchee] = 'T';
+  $nbCase = count($_SESSION['carteBateau'][$nomBateau]);
+  $t = 0;
+  for ($i = 0; $i < $nbCase;) {
+    if ($_SESSION['carteBateau'][$nomBateau][$i] == 'T') {
+      $t++;
+    }
+    $i++;
+  }
+//--- $nom=explode('_',$nomBateau);
+  if ($t == $nbCase) {
+    $message = 'Vous avez coulé un : ' . $nomBateau; //$nom[0];
+  } else {
+    $message = 'Vous avez touché un : ' . $nomBateau; //$nom[0];
+  }
+  return $message;
+}
+/**
+ * Vérifie si tous les bateaux ont été coulé si oui
+ * retourne $messageV == 'Victoire !!!'
+ * @param array $carte==$_SESSION['carteBateau']
+ * @return string $message
+ */
+function verifVictoire($carte) {
+  $nbCaseTouchee = 0;
+  foreach ($carte as $key => $elem) {
+    foreach ($carte[$key] as $case => $elem) {
+      if ($elem == 'T') {
+        $nbCaseTouchee++;
+      }
+    }
+    if ($nbCaseTouchee == NB_CASE_VICTIME) {
+      $message = ' Victoire!!!!!!';
+    }
+    else{
+      $message = FALSE;
+    }
+  }
+      return $message;
+}
+
+/**
+ * permet de modifier la grille en fonction de la direction du bateau
+ * ici le bateau va de haut en bas
+ * @param int $premiereCase
+ * @param array $grille
+ * @param int $longVictime
+ * @return array $grille avec les bateaux  
+ */
+function calculBatBordHaut($premiereCase, $grille, $longVictime,$key) {
+  $caseBateau[0] = $premiereCase;
+  $grille[$caseBateau[0]] = CASE_OCCUPEE;
+  $nomVictime=nomVictime($longVictime,$key);
+$_SESSION['carteBateau'][$nomVictime][]=$caseBateau[0];
+  $i = 1;
+  while ($i < $longVictime) {
+    $caseBateau[$i] = $caseBateau[$i - 1] + NB_COL;
+    $grille[$caseBateau[$i]] = CASE_OCCUPEE;
+    $_SESSION['carteBateau'][$nomVictime][]=$caseBateau[$i];
+    $i++;
+  }
+ return $grille;
+}
+/**
+ * permet de modifier la grille en fonction de la direction du bateau
+ * ici le bateau va de bas en haut
+ * @param int $premiereCase
+ * @param array $grille
+ * @param int $longVictime
+ * @return array $grille avec les bateaux
+ */
+function calculBatBordBas($premiereCase, $grille, $longVictime,$key) {
+  $caseBateau[0] = $premiereCase;
+  $grille[$caseBateau[0]] = CASE_OCCUPEE;
+  $nomVictime=nomVictime($longVictime,$key);
+$_SESSION['carteBateau'][$nomVictime][]=$caseBateau[0];
+  $i = 1;
+  while ($i < $longVictime) {
+    $caseBateau[$i] = $caseBateau[$i - 1] - NB_COL;
+    $grille[$caseBateau[$i]] = CASE_OCCUPEE;
+$_SESSION['carteBateau'][$nomVictime][]=$caseBateau[$i];
+    $i++;
+  }
+  return $grille;
+}
+/**
+ * permet de modifier la grille en fonction de la direction du bateau
+ * ici le bateau va de gauche à droite
+ * @param int $premiereCase
+ * @param array $grille
+ * @param int $longVictime
+ * @return array $grille avec les bateaux  
+ */
+function calculBatBordGauche($premiereCase, $grille, $longVictime,$key) {
+  $caseBateau[0] = $premiereCase;
+  $grille[$caseBateau[0]] = CASE_OCCUPEE;
+    $nomVictime=nomVictime($longVictime,$key);
+$_SESSION['carteBateau'][$nomVictime][]=$caseBateau[0];
+  $i = 1;
+  while ($i < $longVictime) {
+    $caseBateau[$i] = $caseBateau[$i - 1] + 1;
+    $grille[$caseBateau[$i]] = CASE_OCCUPEE;
+    $_SESSION['carteBateau'][$nomVictime][]=$caseBateau[$i];
+    $i++;
+  }
+  return $grille;
+}
+/**
+ * permet de modifier la grille en fonction de la direction du bateau
+ * ici le bateau va de droite à gauche
+ * @param int $premiereCase
+ * @param array $grille
+ * @param int $longVictime
+ * @return array $grille avec les bateaux  
+ */
+function calculBatBordDroite($premiereCase, $grille, $longVictime,$key) {
+  $caseBateau[0] = $premiereCase;
+  $grille[$caseBateau[0]] = CASE_OCCUPEE;
+      $nomVictime=nomVictime($longVictime,$key);
+$_SESSION['carteBateau'][$nomVictime][]=$caseBateau[0];
+  $i = 1;
+  while ($i < $longVictime) {
+    $caseBateau[$i] = $caseBateau[$i - 1] - 1;
+    $grille[$caseBateau[$i]] = CASE_OCCUPEE;
+    $_SESSION['carteBateau'][$nomVictime][]=$caseBateau[$i];
+    $i++;
+  }
+  return $grille;
+}
+/**
+ * Vérifie si le bateau est trop près du bord en bas
+ * @param int $premiereCase
+ * @param int CONST $nbCase
+ * @param int CONST $nbCol
+ * @param int $longVictime
+ * @return boolean  TRUE si on est trop près du bord du bas
+ */
+function tropPresBordBas($premiereCase, $nbCase, $nbCol, $longVictime) {
+    /*ligne modifiée le 27.12 11h56*/
+  if ($premiereCase <= NB_CASE - (($longVictime - 1) * NB_COL)) {
+//  if ($premiereCase < NB_CASE + 1 - (($longVictime - 1) * NB_COL)) {
+    return FALSE;
+  } else {
+    return TRUE;
+  }
+}
+/**
+ * Vérifie si le bateau est trop près du bord droite
+ * @param type $premiereCase
+ * @param type $bordDroite
+ * @param type $longVictime
+ * @return boolean true si on est trop près du bord droite
+ */
+function tropPresBordDroite($premiereCase, $bordDroite, $longVictime) {
+  /*ligne modifiée le 27.12 19h39*/
+  for ($i = 1; $i < $longVictime;) {
+//  for ($i = 1; $i < $longVictime - 1;) {
+    if (in_array($premiereCase, $bordDroite) || in_array($premiereCase + $i, $bordDroite)) {
+      return true;
+    } else {
+      $i++;
+    }
+  }
+  return FALSE;
+}
+/**
+ * Calcul une case de départ pour le bateau suivant en fonction de la $grilleNettoyee
+ * vérifie si la case de départ n'est pas trop près d'un autre bateau
+ * (évite que les bateaux se chevauchent) si ok retourne la valeur de la case 
+ * de départ du bateau si non false et la fonction tirage rappel cette fonction jusqu'à
+ * obtenir autre chose que FALSE
+ * @param array $grille
+ * @param array $grilleNettoyee
+ * @param int $longVictime
+ * @param bool $orientationVictime
+ * @param int CONST $nbCol
+ * @return false ou $caseDepart 
+ */
+function tropPresBateau($grille, $grilleNettoyee, $longVictime, $orientationVictime, $nbCol) {
+  $caseDepart = array_rand($grilleNettoyee, 1);
+  $keyDepart = array_search($caseDepart, $grille);
+
+//--- Si le bateau est vertical
+  if ($orientationVictime == TRUE) {
+    $tropPresBas = tropPresBordBas($caseDepart, NB_CASE, NB_COL, $longVictime);
+//--- Si le bateau n'est pas trop près du bord bas
+    if ($tropPresBas === FALSE) {
+  /*ligne modifiée le 27 12 à 18h59*/      
+      for ($i = 1; $i < $longVictime;) {
+ //     for ($i = 1; $i <= $longVictime - 1;) {
+        if ($grille[$keyDepart + ($i * NB_COL)] == CASE_OCCUPEE) {
+//--- return FALSE relance la fonction dans la fonction tirage
+          return FALSE;
+        } else {
+          $i++;
+        }
+      }
+      return $caseDepart;
+    } else {
+//--- Si le bateau est trop près du bord bas
+/*ligne modifiée le 27 12 à 18h59*/       
+      for ($i = 1; $i < $longVictime;) {
+        if ($grille[$keyDepart - ($i * NB_COL)] == CASE_OCCUPEE) {
+//--- return FALSE relance la fonction dans la fonction tirage
+          return FALSE;
+        } else {
+          $i++;
+        }
+      }
+      return $caseDepart;
+    }
+  }
+//--- Si le bateau est horizontal   
+  else {
+    $bordDroite = bordDroite(NB_COL, $grille);
+    $tropPresBord = tropPresBordDroite($caseDepart, $bordDroite, $longVictime);
+//--- Si le bateau n'est pas trop près du bord droite
+    if ($tropPresBord === FALSE) {
+      for ($i = 1; $i <= $longVictime;) {
+        /*ligne modifiée le 27.12 20h40*/
+//      for ($i = 1; $i <= $longVictime - 1;) {
+        if ($grille[$keyDepart + $i] == CASE_OCCUPEE) {
+          /*    
+           * cette ligne fonctionne plus ou moins bien 
+           * le bug est toujours la on passe à un offset 145 
+           * 
+           */
+//--- return FALSE relance la fonction dans la fonction tirage
+          return FALSE;
+        } else {
+          $i++;
+        }
+      }
+      return $caseDepart;
+    }
+//--- si le bateau est trop près du bord droite    
+    else {
+      /*ligne modifiée le 28.12 09h25*/
+      for ($i = 0; $i < $longVictime;) {
+      //for ($i = 1; $i <= $longVictime - 1;) {
+//En modifiant la boucle et en partant de zero au lieu de 1 on dirait que cela fonctionne 
+//pas vrai le bug est toujours la
+        
+        if ( $grille[$keyDepart - $i] == CASE_OCCUPEE) {
+//--- return FALSE relance la fonction dans la fonction tirage
+          return FALSE;
+        } else {
+          $i++;
+        }
+      }
+      return $caseDepart;
+    }
+  }
+}
+/**
+ * Cree une copie de la grille ou setrouve les bateaux et supprime toutes les case
+ * == à CASE_OCCUPEE pour limiter le tirage au sort de la case de depart du bateau suivant
+ * @param array $grille
+ * @return array $grilleNettoyee 
+ */
+function effacerCaseOccupee($grille) {
+  $grilleNettoyee = $grille;
+  foreach ($grilleNettoyee as $key => $elem) {
+    if ($elem == CASE_OCCUPEE) {
+      unset($grilleNettoyee[$key]);
+      reset($grilleNettoyee);
+    }
+  }
+  return $grilleNettoyee;
+}
+/**
+ * calcul la grille de l'ordinateur avec les bateaux choisi aléatoirement
+ * @param array $grille
+ * @return array $grille 
+ */
+function tirage($grille) {
+  $victime = array(2, 2, 2, 2, 3, 3, 3, 4, 4, 5); 
+  $casebateau = array();
+  $bordBas = bordBas(NB_CASE, $grille);
+  $bordDroite = bordDroite(NB_COL, $grille);
+  foreach ($victime as $key => $longVictime) {
+    
+//defini l'orientation des bateaux 1=vertical, 0=horizontal
+    $orientationVictime = mt_rand(0, 1);
+/* $orientationVictime = 0;*/
+
+//--- Le premier bateau a toutes les cases libres
+    if ($key == 0) {
+      $caseBateau[0] = array_rand($grille, 1);
+    }
+//--- les autres bateau    
+    else {
+//Faire les calculs sur une copie de la grille($grilleNettoyee) puis les placer 
+//dans la grille finale permet d'effacer les cases déjà utilisées ce qui 
+// évite des mt_rand qui se répeterait      
+//---$grilleNettoyee=$grille sans les cases valant déjà CASE_OCCUPEE;
+      $grilleNettoyee = effacerCaseOccupee($grille);
+//--- Tant que la fonction tropPrèsbateau ne renvoie pas un entier on recalcul 
+//--- la case de départ  
+      do {
+        $pasTropPres = tropPresBateau($grille, $grilleNettoyee, $longVictime, $orientationVictime, NB_COL);
+      } while ($pasTropPres === FALSE);
+      $caseBateau[0] = $pasTropPres;
+    }
+/*Pour dev==provisoire!!!
+defini la case de départ du bateaux 
+  $caseBateau[0] = 104;*/
+/*  Défini la longueur de la victime    
+    $longVictime = 5;*/
+
+//--- Si le bateau est vertical         
+    if ($orientationVictime == TRUE) {
+      $tropPresBord = tropPresBordBas($caseBateau[0], NB_CASE, NB_COL,$longVictime);
+      if ($tropPresBord === FALSE) {
+      //  $collection[$key][$caseBateau[0]];?????????????????????????
+        //voir pour passer la clé dans la fonctioncalculBatBordHaut()
+        //pour fair la collection dans la fonction en question?????
+        $grille = calculBatBordHaut($caseBateau[0], $grille, $longVictime, $key);
+      } else {
+        $grille = calculBatBordBas($caseBateau[0], $grille, $longVictime, $key);
+      }
+    } 
+    else {
+//--- Si le bateau est horizontal      
+      $tropPresBord = tropPresBordDroite($caseBateau[0], $bordDroite, $longVictime);
+      if ($tropPresBord === TRUE) {
+        $grille = calculBatBordDroite($caseBateau[0], $grille, $longVictime, $key);
+      } else {
+        $grille = calculBatBordGauche($caseBateau[0], $grille, $longVictime, $key);
+      }
+    } //***Fin de la vérif horizontal
+  }//***Fin du foreach nombre de victime
+  
+  return $grille;
+}
+/**
+ * Uniquement l'affichage du plateau de jeux calculé par l'ordinateur pour le dev
+ * @param array $plateau 
+ */
+function affichage($plateau) {
+  echo 'Le choix de la position des bateaux<br />';
+  for ($i = 1; $i <= NB_CASE; $i++) {
+//--- $long et switch est provisoire c'est juste pour aligner les résultats     
+    $long = strlen((string) $plateau[$i]);
+    switch ($long) {
+      case 1:
+        $plateau[$i] = '&nbsp;&nbsp;' . $plateau[$i] . '&nbsp;&nbsp;';
+        break;
+      case 2:
+        $plateau[$i] = '&nbsp;' . $plateau[$i] . '&nbsp;';
+        break;
+      default:
+        $plateau[$i] = $plateau[$i];
+    }
+
+    if (($i != 1 || $i == NB_CASE) && $i % NB_COL == 0) {
+      echo ' | ' . $plateau[$i] . '<br />';
+    } else {
+      echo ' | ' . $plateau[$i];
+    }
+  }
+}
+/**
+ * colorie les cases jouee bleu=eau rouge= touché
+ * @param type $elem
+ * @return string 
+ */
+function atribueClasse($elem){
+  switch ($elem){
+    case 'E':
+      $class='eau';
+      break;
+    case 'T':
+      $class='touche';
+      break;
+    default :
+      $class='brouillard';
+      break;
+  }
+  return $class;
+}
+?>
