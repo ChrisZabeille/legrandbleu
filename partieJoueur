@@ -2,9 +2,6 @@
 //--- Enpéche l'acces à la fin du script. Qui n'est accessible que si l'on 
 //--- essaie de rentrer une valeur inf à zero ou sup au NB_CASE ou autres tentative dans $_GET
 $fin=FALSE;
-$flag='joueur';
-
-
 
 
 //***** Si on clique sur une case la partie est vraiment commencée
@@ -55,14 +52,6 @@ else {
 //--- Positionne les bateaux de l'ordi sur la grille
   $_SESSION['plateau'] = tirage($_SESSION['grille']);
 }
-
-////---Verife si la partie est finie
-//$messageV=verifVictoire($_SESSION['carteBateau']);
-//
-////--- affichage de la grille de l'ordi sans les bateaux
-//require_once('vue/grilleOrdi.php');
-
-
 
 /*Affiche la grille avec les bateaux
 Seulement pour dev*/
