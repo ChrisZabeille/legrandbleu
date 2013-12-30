@@ -1,0 +1,48 @@
+<?php
+session_start();
+require_once ('includes/config.php');
+require_once('includes/fonction.php');
+
+?>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="stylesheet" href="style/style.css" />
+    <title></title>
+  </head>
+  <body>
+    <div id="grille">
+<?php
+//--- le joueur place ses bateaux et l'ordi les coules
+//pas encore utile c'est la deuxiemme partie
+//require_once('partieOrdi.php');
+
+//--- L'ordi choisi la position des bateaux et le joueur les coules  
+require_once('partieJoueur.php');
+
+//--- affichage de la grille de l'ordi sans les bateaux
+//--- le joueur clique sur cette grille et l'ordi affiche si touché ou si à l'eau
+require_once('vue/grilleOrdi.php');
+
+//--- affichage d'une grille neutre où le joueur place ses bateaux 
+//--- et l'ordi essaye de les couler
+//pas encore utile c'est la deuxiemme partie
+//require_once('vue/grilleJoueur.php');
+
+//---Verife si la partie est finie
+$messageV=verifVictoire($_SESSION['carteBateau']);
+
+//--- affichage de la composition de la flotte
+require_once('vue/commentaire.php');
+//--- affiche les bateaux à placer par le joueur pas encore utile c'est la deuxiemme partie
+//require_once( 'vue/lesBateaux.php');
+
+/*Affiche la grille calculée par l'ordi avec les bateaux
+Seulement pour dev*/
+affichage($_SESSION['plateau']);
+?> 
+      </div>
+  </body>
+</html>
