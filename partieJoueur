@@ -1,0 +1,76 @@
+<?php
+//--- Enpéche l'acces à la fin du script. Qui n'est accessible que si l'on 
+//--- essaie de rentrer une valeur inf à zero ou sup au NB_CASE ou autres tentative dans $_GET
+$fin=FALSE;
+$flag='joueur';
+
+
+
+
+//***** Si on clique sur une case la partie est vraiment commencée
+if (isset($_GET['case'])) {
+  $caseChoisieJoueur = htmlspecialchars($_GET['case']);
+//---- Compte le nb de coup joué   
+  $_SESSION['compteurCoup']++;
+  if ($caseChoisieJoueur == 'T' || $caseChoisieJoueur == 'E') {
+    $message = 'Vous avez déjà joué cette case';
+  } 
+  else {
+    if ($caseChoisieJoueur > 0 && $caseChoisieJoueur <= NB_CASE) {
+      if ($_SESSION['plateau'][$caseChoisieJoueur] == CASE_OCCUPEE) {
+        foreach ($_SESSION['carteBateau'] as $nomBateau => $elem) {
+          foreach ($_SESSION['carteBateau'][$nomBateau] as $pos) {
+            $cleTouchee = array_search($caseChoisieJoueur, $_SESSION['carteBateau'][$nomBateau]);
+            if (is_int($cleTouchee)) {
+//--- Geere le message à afficher à chaque coup du joueur        
+              $message = verifDegat($caseChoisieJoueur, $nomBateau, $cleTouchee);
+            }
+          }
+        }
+        $_SESSION['grille'][$caseChoisieJoueur] = 'T'; //CASE_TOUCHE;
+      }
+      else {
+        $message = 'A l\'eau';
+        $_SESSION['grille'][$caseChoisieJoueur] = 'E'; //CASE_EAU;
+      }
+    }
+    else {
+      require_once 'vue/tricheur.php';
+      $fin = TRUE;
+      goto fin;
+    }
+  }
+}
+else {
+//***** Si on a pas encore cliqué sur une case
+  $message = 'A vous de jouer';
+  $_SESSION['compteurCoup']=0;
+//---Initialisation de la carte des bateaux  
+  $_SESSION['carteBateau'] = array();
+//--- Creation d'une grille neutre pour l'ordi
+  $_SESSION['grille'] = grillage(NB_CASE);  
+//--- Creation d'un tableau contenant toutes les cases qui constituent 
+//--- le bord droite de la grille
+  $_SESSION['bordDroite'] = bordDroite(NB_COL, $_SESSION['grille']);
+//--- Positionne les bateaux de l'ordi sur la grille
+  $_SESSION['plateau'] = tirage($_SESSION['grille']);
+}
+
+////---Verife si la partie est finie
+//$messageV=verifVictoire($_SESSION['carteBateau']);
+//
+////--- affichage de la grille de l'ordi sans les bateaux
+//require_once('vue/grilleOrdi.php');
+
+
+
+/*Affiche la grille avec les bateaux
+Seulement pour dev*/
+//affichage($_SESSION['plateau']);
+
+//--- Met fin au programme si on triche
+if ($fin == TRUE) {
+  fin :
+  $message ='<br />Fallait pas!!!';
+}
+?>
