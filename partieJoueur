@@ -3,12 +3,12 @@
 //--- essaie de rentrer une valeur inf à zero ou sup au NB_CASE ou autres tentative dans $_GET
 $fin=FALSE;
 
-
 //***** Si on clique sur une case la partie est vraiment commencée
 if (isset($_GET['case'])) {
   $caseChoisieJoueur = htmlspecialchars($_GET['case']);
 //---- Compte le nb de coup joué   
   $_SESSION['compteurCoup']++;
+  
   if ($caseChoisieJoueur == 'T' || $caseChoisieJoueur == 'E') {
     $message = 'Vous avez déjà joué cette case';
   } 
