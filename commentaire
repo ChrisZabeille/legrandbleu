@@ -1,0 +1,15 @@
+<?php
+
+/* © www.zabeille.org 2012 
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+?>
+<p>La flotte se compose de :</p>
+<ul>
+  <li>4 sous-marins de 2 cases</li>
+  <li>3 destroyers de 3 cases</li>
+  <li>2 croiseurs de 4 cases</li>
+  <li>1 porte-avions de 5 cases</li>
+</ul>
+<p>Vous avez joué : <?php echo $_SESSION['compteurCoup'];?></p>
