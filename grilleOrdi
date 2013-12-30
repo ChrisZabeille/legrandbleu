@@ -1,0 +1,37 @@
+<?php
+/* © www.zabeille.org 2012 
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+?>
+<p>
+  <?php
+//--- Demande au joueur de jouer ou affiche le résultat d'un coup
+  echo $message;
+//--- n'affiche quelque chose qu'en cas de victoire  
+  echo $messageV;
+  ?>
+</p>
+
+<table id="grilleOrdi">
+  <tr><th colspan="7">La grille de l'ordi</th></tr>
+  <tr>
+<?php
+foreach($_SESSION['grille'] as $key=>$elem){
+//--- color les cases
+    $class=atribueClasse($elem);
+//--- cree les passage à la ligne suivante    
+  if(!in_array($key,$_SESSION['bordDroite'])){
+    ?>
+    <td class="<?php echo $class;?>"><a href='index.php?case=<?php echo $elem;?>'><?php echo $elem;?></a></td>
+<?php
+  }
+  else{
+    ?>
+    <td class="<?php echo $class;?>"><a href='index.php?case=<?php echo $elem;?>'><?php echo $elem;?></a></td></tr><tr>    
+    <?php
+  }  
+}
+?>
+</tr>
+</table>
