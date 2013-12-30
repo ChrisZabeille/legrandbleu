@@ -1,15 +1,18 @@
 <?php
-
 //--- NB_CASE n'acepte que des nb ayant une racine V2 entières  
 define('NB_CASE',64);
 define('NB_COL',intval(sqrt(NB_CASE)));
 //--- Si un bateau est sur la case on met la valeur à 200
 //--- pour le moment fixé à 200 mais devrait être recalculé en fonction du nb de case
+//--- Comme le nb de bateau ne change pas plus il y a de case, plus le jeux est difficle ;-)
 define('CASE_OCCUPEE',200);
 define('CASE_TOUCHE','T');
 define('CASE_EAU','E');
 define('NB_victime',10);
 define('NB_CASE_VICTIME',30);
+
+//--- Les bateaux
+//--- 4 bat de 2 cases - 4 bat de 3 cases - 2 bat de 4 cases - 1 bat de 5 cases
 //--- N'est pas encore utilsé à ce stade du dev!!!
 $carteJoueur=array('sous-marin_0'=>array( 0=>0,
                                           1=>0),
@@ -42,8 +45,4 @@ $carteJoueur=array('sous-marin_0'=>array( 0=>0,
                                             3=>0,
                                             4=>0)   
                    );
-
-//--- Les bateaux
-//--- 4 bat de 2 cases - 4 bat de 3 cases - 2 bat de 4 cases - 1 bat de 5 cases  
-//$victime = array(2, 2, 2, 2, 3, 3, 3, 4, 4, 5);
 ?>
