@@ -53,10 +53,6 @@ else {
   $_SESSION['plateau'] = tirage($_SESSION['grille']);
 }
 
-/*Affiche la grille avec les bateaux
-Seulement pour dev*/
-//affichage($_SESSION['plateau']);
-
 //--- Met fin au programme si on triche
 if ($fin == TRUE) {
   fin :
