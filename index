@@ -22,6 +22,9 @@ require_once('includes/fonction.php');
 //--- L'ordi choisi la position des bateaux et le joueur les coules  
 require_once('partieJoueur.php');
 
+//---Verife si la partie est finie
+$messageV=verifVictoire($_SESSION['carteBateau']);
+
 //--- affichage de la grille de l'ordi sans les bateaux
 //--- le joueur clique sur cette grille et l'ordi affiche si touché ou si à l'eau
 require_once('vue/grilleOrdi.php');
@@ -30,9 +33,6 @@ require_once('vue/grilleOrdi.php');
 //--- et l'ordi essaye de les couler
 //pas encore utile c'est la deuxiemme partie
 //require_once('vue/grilleJoueur.php');
-
-//---Verife si la partie est finie
-$messageV=verifVictoire($_SESSION['carteBateau']);
 
 //--- affichage de la composition de la flotte
 require_once('vue/commentaire.php');
