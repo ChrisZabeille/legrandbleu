@@ -306,8 +306,7 @@ function tropPresBateau($grille, $grilleNettoyee, $longVictime, $orientationVict
     if ($tropPresBas === FALSE) {
   /*ligne modifiée le 27 12 à 18h59*/      
       for ($i = 1; $i < $longVictime;) {
- //     for ($i = 1; $i <= $longVictime - 1;) {
-        if ($grille[$keyDepart + ($i * NB_COL)] == CASE_OCCUPEE) {
+         if ($grille[$keyDepart + ($i * NB_COL)] == CASE_OCCUPEE) {
 //--- return FALSE relance la fonction dans la fonction tirage
           return FALSE;
         } else {
@@ -337,8 +336,8 @@ function tropPresBateau($grille, $grilleNettoyee, $longVictime, $orientationVict
     if ($tropPresBord === FALSE) {
       for ($i = 1; $i <= $longVictime;) {
         /*ligne modifiée le 27.12 20h40*/
-//      for ($i = 1; $i <= $longVictime - 1;) {
-        if ($grille[$keyDepart + $i] == CASE_OCCUPEE) {
+        $cleDepart=($keyDepart + $i<NB_CASE)?$keyDepart + $i:$keyDepart;
+        if ($grille[$cleDepart] == CASE_OCCUPEE) {
           /*    
            * cette ligne fonctionne plus ou moins bien 
            * le bug est toujours la on passe à un offset 145 
@@ -354,11 +353,8 @@ function tropPresBateau($grille, $grilleNettoyee, $longVictime, $orientationVict
     }
 //--- si le bateau est trop près du bord droite    
     else {
-      /*ligne modifiée le 28.12 09h25*/
+      /*ligne modifiée le 13.01 09h25*/
       for ($i = 0; $i < $longVictime;) {
-      //for ($i = 1; $i <= $longVictime - 1;) {
-//En modifiant la boucle et en partant de zero au lieu de 1 on dirait que cela fonctionne 
-//pas vrai le bug est toujours la
         
         if ( $grille[$keyDepart - $i] == CASE_OCCUPEE) {
 //--- return FALSE relance la fonction dans la fonction tirage
